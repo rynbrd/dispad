@@ -7,5 +7,6 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_CHECK_LIB([Xi], [XOpenDevice])
 AC_CHECK_LIB([X11], [XOpenDisplay])
+AC_CHECK_LIB([confuse], [cfg_init])
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT

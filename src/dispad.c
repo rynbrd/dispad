@@ -124,6 +124,7 @@ int main(int argc, char** argv) {
 	control = malloc(sizeof(Control));
 	if (!control_init(control, display, config.property, config.enable, config.disable)) {
 		ERROR("failed to initialize control object\n");
+		return 1;
 	}
 	DEBUG("control initialized\n");
 

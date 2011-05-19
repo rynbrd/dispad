@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
+#include <confuse.h>
 
 static void usage() {
 	fprintf(stderr, "Usage: dispad [-hFD] [-c file] [-p name] [-e value] [-d value]\n");
@@ -81,7 +82,7 @@ static Bool config_file_create(char* file) {
 
 	fprintf(fd, "# default dispad config file\n\n");
 	fprintf(fd, "# name of the property used to enable/disable the trackpad\n");
-	fprintf(fd, "property = %s\n\n", MTRACKD_DEFAULT_PROP);
+	fprintf(fd, "property = \"%s\"\n\n", MTRACKD_DEFAULT_PROP);
 	fprintf(fd, "# the value used to enable the trackpad\n");
 	fprintf(fd, "enable = %d\n\n", MTRACKD_DEFAULT_ENABLE);
 	fprintf(fd, "# the value used to disable the trackpad\n");
@@ -97,7 +98,29 @@ static Bool config_file_create(char* file) {
 }
 
 static Bool config_file_parse(Config* obj, char* file) {
-	return True;
+	cfg_bool_t modifiers = obj->modifiers ? cfg_true : cfg_false;
+	cfg_opt_t opts[] = {
+		CFG_SIMPLE_STR("property", &obj->property),
+		CFG_SIMPLE_INT("enable", &obj->enable),
+		CFG_SIMPLE_INT("disable", &obj->disable),
+		CFG_SIMPLE_BOOL("modifiers", &modifiers),
+		CFG_SIMPLE_INT("poll", &obj->poll),
+		CFG_SIMPLE_INT("delay", &obj->delay),
+		CFG_END()
+	};
+	cfg_t* cfg = cfg_init(opts, 0);
+	int res = cfg_parse(cfg, file);
+	cfg_free(cfg);
+	if (res == CFG_SUCCESS) {
+		return True;
+	}
+	else if (res == CFG_FILE_ERROR) {
+		ERROR("could not read config file\n");
+	}
+	else {
+		ERROR("could not parse config file\n");
+	}
+	return False;
 }
 
 Bool config_init(Config* obj, int argc, char** argv) {
