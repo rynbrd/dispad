@@ -50,6 +50,8 @@ static void help() {
 	fprintf(stderr, "  -s, --poll=MS             How long (in ms) to sleep between keyboard polls.\n");
 	fprintf(stderr, "  -i, --delay=MS            How long (in ms) to disable the trackpad after a\n");
 	fprintf(stderr, "                            keystroke.\n");
+	fprintf(stderr, "  -P, --pidfile=FILE        Create a pid file at the given location. Only\n");
+	fprintf(stderr, "                            useful when daemonizing.\n");
 	fprintf(stderr, "  -F, --foreground          Start in the foreground. We daemonize by default.\n");
 	fprintf(stderr, "  -D, --debug               Enable debug output. Only useful when combined with\n");
 	fprintf(stderr, "                            -f.\n");
@@ -128,7 +130,7 @@ Bool config_init(Config* obj, int argc, char** argv) {
 	Bool res = True;
 	char* value;
 	char* file = NULL;
-	char* opts = "c:p:e:d:ms:i:FDh";
+	char* opts = "c:p:e:d:ms:i:P:FDh";
 	struct option lopts[] = {
 		{"config", 1, 0, 'c'},
 		{"property", 1, 0, 'p'},
@@ -137,6 +139,7 @@ Bool config_init(Config* obj, int argc, char** argv) {
 		{"modifiers", 0, 0, 'm'},
 		{"poll", 1, 0, 's'},
 		{"delay", 1, 0, 'i'},
+		{"pidfile", 1, 0, 'P'},
 		{"foreground", 1, 0, 'F'},
 		{"debug", 1, 0, 'D'},
 		{0, 0, 0, 0,}
@@ -149,16 +152,20 @@ Bool config_init(Config* obj, int argc, char** argv) {
 	Bool has_modifiers = False;
 	Bool has_poll = False;
 	Bool has_delay = False;
+	Bool has_pid_file = False;
 	Bool has_fg = False;
 	Bool has_debug = False;
 
 	tmp.property = NULL;
-	obj->property = strdup(MTRACKD_DEFAULT_PROP);
+	tmp.pid_file = NULL;
+	obj->pid_file_created = False;
+	obj->property = MTRACKD_DEFAULT_PROP == NULL ? NULL : strdup(MTRACKD_DEFAULT_PROP);
 	obj->enable = MTRACKD_DEFAULT_ENABLE;
 	obj->disable = MTRACKD_DEFAULT_DISABLE;
 	obj->modifiers = MTRACKD_DEFAULT_MODIFIERS;
 	obj->poll = MTRACKD_DEFAULT_POLL;
 	obj->delay = MTRACKD_DEFAULT_DELAY;
+	obj->pid_file = MTRACKD_DEFAULT_PID_FILE == NULL ? NULL : strdup(MTRACKD_DEFAULT_PID_FILE);
 	obj->foreground = MTRACKD_DEFAULT_FG;
 	obj->debug = MTRACKD_DEFAULT_DEBUG;
 
@@ -173,7 +180,7 @@ Bool config_init(Config* obj, int argc, char** argv) {
 				has_prop = True;
 			}
 			else {
-				ERROR("invalid property name: %s\n", optarg);
+				ERROR("property name is empty\n");
 				res = False;
 				goto cleanup;
 			}
@@ -207,6 +214,17 @@ Bool config_init(Config* obj, int argc, char** argv) {
 				goto cleanup;
 			}
 			has_delay = True;
+			break;
+		case 'P':
+			if (strlen(optarg) > 0) {
+				tmp.pid_file = strdup(optarg);
+				has_pid_file = True;
+			}
+			else {
+				ERROR("pid file is empty\n");
+				res = False;
+				goto cleanup;
+			}
 			break;
 		case 'F':
 			tmp.foreground = True;
@@ -248,8 +266,14 @@ Bool config_init(Config* obj, int argc, char** argv) {
 	}
 
 	if (has_prop) {
-		free(obj->property);
+		if (obj->property != NULL)
+			free(obj->property);
 		obj->property = strdup(tmp.property);
+	}
+	if (has_pid_file) {
+		if (obj->pid_file != NULL)
+			free(obj->pid_file);
+		obj->pid_file = strdup(tmp.pid_file);
 	}
 	if (has_enable)
 		obj->enable = tmp.enable;
@@ -274,8 +298,45 @@ cleanup:
 	return res;
 }
 
+int config_create_pid_file(Config* obj) {
+	if (obj->pid_file == NULL)
+		return True;
+	if (file_exists(obj->pid_file)) {
+		ERROR("pid file exists: %s\n", obj->pid_file);
+		return False;
+	}
+
+	FILE* f = fopen(obj->pid_file, "w");
+	if (f == NULL) {
+		ERROR("could not write to pid file: %s\n", obj->pid_file)
+		return False;
+	}
+
+	fprintf(f, "%d", getpid());
+	fclose(f);
+	obj->pid_file_created = True;
+	return True;
+}
+
+int config_remove_pid_file(Config* obj) {
+	if (obj->pid_file == NULL || !obj->pid_file_created)
+		return True;
+	if (!file_exists(obj->pid_file)) {
+		WARN("pid file does not exist: %s\n", obj->pid_file);
+		return True;
+	}
+
+	if (unlink(obj->pid_file) != 0) {
+		ERROR("could not delete pid file: %s\n", obj->pid_file);
+		return False;
+	}
+	return True;
+}
+
 void config_free(Config* obj) {
 	if (obj->property != NULL)
 		free(obj->property);
+	if (obj->pid_file != NULL)
+		free(obj->pid_file);
 }
 

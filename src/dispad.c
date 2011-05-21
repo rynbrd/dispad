@@ -35,10 +35,12 @@
 
 int log_level = LOG_INFO;
 Display* display = NULL;
+Config* config = NULL;
 Control* control = NULL;
 Listen* listen = NULL;
 
 static void cleanup() {
+	DEBUG("cleaning up\n");
 	if (control != NULL) {
 		control_free(control);
 		free(control);
@@ -51,6 +53,12 @@ static void cleanup() {
 	if (display != NULL) {
 		XCloseDisplay(display);
 		display = NULL;
+	}
+	if (config != NULL) {
+		config_remove_pid_file(config);
+		config_free(config);
+		free(config);
+		config = NULL;
 	}
 }
 
@@ -79,8 +87,9 @@ int xlib_error_handler(Display* display, XErrorEvent* event) {
 }
 
 static void signal_handler(int signum) {
+	INFO("recieved signal %d\n", signum);
 	cleanup();
-	kill(getpid(), signum);
+	exit(0);
 }
 
 static void signal_installer() {
@@ -114,33 +123,34 @@ static void signal_installer() {
 
 void background() {
 	int pid = fork();
-	if (pid > 0)
+	if (pid > 0) {
+		cleanup();
 		exit(0);
+	}
 	else if (pid == -1) {
 		ERROR("failed to fork process, exitting\n");
+		cleanup();
 		exit(2);
 	}
 }
 
 int main(int argc, char** argv) {
-	Config config;
-	if (!config_init(&config, argc, argv)) {
-		INFO("quitting at config\n");
+	config = malloc(sizeof(Config));
+	if (!config_init(config, argc, argv))
 		return 1;
-	}
 
-	if (config.foreground)
-		log_level = config.debug ? LOG_DEBUG : LOG_INFO;
+	if (config->foreground)
+		log_level = config->debug ? LOG_DEBUG : LOG_INFO;
 	else
 		log_level = LOG_NONE;
 
 	INFO("configured with:\n");
-	INFO("  property = %s\n", config.property);
-	INFO("  enable = %u\n", config.enable);
-	INFO("  disable = %u\n", config.disable);
-	INFO("  modifiers = %s\n", config.modifiers ? "true" : "false");
-	INFO("  poll = %d\n", config.poll);
-	INFO("  delay = %d\n", config.delay);
+	INFO("  property = %s\n", config->property);
+	INFO("  enable = %u\n", config->enable);
+	INFO("  disable = %u\n", config->disable);
+	INFO("  modifiers = %s\n", config->modifiers ? "true" : "false");
+	INFO("  poll = %d\n", config->poll);
+	INFO("  delay = %d\n", config->delay);
 
 	display = XOpenDisplay(NULL);
 	if (display == NULL) {
@@ -150,30 +160,29 @@ int main(int argc, char** argv) {
 	DEBUG("X display opened\n");
 
 	control = malloc(sizeof(Control));
-	if (!control_init(control, display, config.property, config.enable, config.disable)) {
+	if (!control_init(control, display, config->property, config->enable, config->disable)) {
 		ERROR("failed to initialize control object\n");
 		return 1;
 	}
 	DEBUG("control initialized\n");
 
 	listen = malloc(sizeof(Listen));
-	if (!listen_init(listen, display, config.modifiers, config.delay, config.poll)) {
+	if (!listen_init(listen, display, config->modifiers, config->delay, config->poll)) {
 		ERROR("failed to initialize listen object\n");
 		cleanup();
 		return 1;
 	}
 	DEBUG("listen initialized\n");
 
-	config_free(&config);
-	DEBUG("config object freed\n");
-
 	signal_installer();
 	DEBUG("signal handling enabled\n");
 
 	XSetErrorHandler(xlib_error_handler);
 
-	if (!config.foreground)
+	if (!config->foreground)
 		background();
+
+	config_create_pid_file(config);
 
 	DEBUG("finding trackpad devices\n");
 	control_find_devices(control);

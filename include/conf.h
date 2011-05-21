@@ -32,6 +32,7 @@
 #define MTRACKD_DEFAULT_MODIFIERS False
 #define MTRACKD_DEFAULT_POLL 100
 #define MTRACKD_DEFAULT_DELAY 1000
+#define MTRACKD_DEFAULT_PID_FILE NULL
 #define MTRACKD_DEFAULT_FG False
 #define MTRACKD_DEFAULT_DEBUG False
 
@@ -42,6 +43,8 @@ typedef struct {
 	Bool modifiers;
 	int poll;
 	int delay;
+	char* pid_file;
+	Bool pid_file_created;
 	Bool foreground;
 	Bool debug;
 } Config;
@@ -50,6 +53,14 @@ typedef struct {
  * Returns False if the application should not continue.
  */
 Bool config_init(Config* obj, int argc, char** argv);
+
+/* Create a PID file if it was configured to do so.
+ */
+int config_create_pid_file(Config* obj);
+
+/* Remove a PID file if one was created.
+ */
+int config_remove_pid_file(Config* obj);
 
 /* Free any memory associated with a Config object.
  */
