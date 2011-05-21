@@ -181,7 +181,10 @@ int main(int argc, char** argv) {
 	if (!config->foreground)
 		background();
 
-	config_create_pid_file(config);
+	if (!config_create_pid_file(config)) {
+		cleanup();
+		return 1;
+	}
 
 	DEBUG("finding trackpad devices\n");
 	control_find_devices(control);

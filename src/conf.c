@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <getopt.h>
 #include <confuse.h>
 
@@ -59,11 +60,9 @@ static void help() {
 }
 
 static Bool file_exists(char* file) {
-	FILE* fd = fopen(file, "r");
-	if (fd != NULL) {
-		fclose(fd);
+	struct stat buf;
+	if (stat(file, &buf) == 0)
 		return True;
-	}
 	return False;
 }
 
