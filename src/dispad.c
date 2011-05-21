@@ -40,7 +40,6 @@ Control* control = NULL;
 Listen* listen = NULL;
 
 static void cleanup() {
-	DEBUG("cleaning up\n");
 	if (control != NULL) {
 		control_free(control);
 		free(control);
@@ -87,7 +86,6 @@ int xlib_error_handler(Display* display, XErrorEvent* event) {
 }
 
 static void signal_handler(int signum) {
-	INFO("recieved signal %d\n", signum);
 	cleanup();
 	exit(0);
 }
@@ -151,6 +149,7 @@ int main(int argc, char** argv) {
 	INFO("  modifiers = %s\n", config->modifiers ? "true" : "false");
 	INFO("  poll = %d\n", config->poll);
 	INFO("  delay = %d\n", config->delay);
+	INFO("  pidfile = %s\n", config->pid_file == NULL ? "<none>" : config->pid_file);
 
 	display = XOpenDisplay(NULL);
 	if (display == NULL) {

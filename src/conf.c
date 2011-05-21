@@ -94,7 +94,9 @@ static Bool config_file_create(char* file) {
 	fprintf(fd, "# how long (in ms) to sleep betweek keyboard polls\n");
 	fprintf(fd, "poll = %d\n\n", MTRACKD_DEFAULT_POLL);
 	fprintf(fd, "# how long (in ms) to disable the trackpad after a keystroke\n");
-	fprintf(fd, "delay = %d\n", MTRACKD_DEFAULT_DELAY);
+	fprintf(fd, "delay = %d\n\n", MTRACKD_DEFAULT_DELAY);
+	fprintf(fd, "# create a pid file at the given location; not created if left commented\n");
+	fprintf(fd, "#pidfile = \"%s/.dispad.pid\"\n", getenv("HOME"));
 	fclose(fd);
 	return True;
 }
@@ -108,6 +110,7 @@ static Bool config_file_parse(Config* obj, char* file) {
 		CFG_SIMPLE_BOOL("modifiers", &modifiers),
 		CFG_SIMPLE_INT("poll", &obj->poll),
 		CFG_SIMPLE_INT("delay", &obj->delay),
+		CFG_SIMPLE_STR("pidfile", &obj->pid_file),
 		CFG_END()
 	};
 	cfg_t* cfg = cfg_init(opts, 0);
@@ -159,13 +162,13 @@ Bool config_init(Config* obj, int argc, char** argv) {
 	tmp.property = NULL;
 	tmp.pid_file = NULL;
 	obj->pid_file_created = False;
-	obj->property = MTRACKD_DEFAULT_PROP == NULL ? NULL : strdup(MTRACKD_DEFAULT_PROP);
+	obj->property = NULL;
 	obj->enable = MTRACKD_DEFAULT_ENABLE;
 	obj->disable = MTRACKD_DEFAULT_DISABLE;
 	obj->modifiers = MTRACKD_DEFAULT_MODIFIERS;
 	obj->poll = MTRACKD_DEFAULT_POLL;
 	obj->delay = MTRACKD_DEFAULT_DELAY;
-	obj->pid_file = MTRACKD_DEFAULT_PID_FILE == NULL ? NULL : strdup(MTRACKD_DEFAULT_PID_FILE);
+	obj->pid_file = NULL;
 	obj->foreground = MTRACKD_DEFAULT_FG;
 	obj->debug = MTRACKD_DEFAULT_DEBUG;
 
@@ -270,11 +273,17 @@ Bool config_init(Config* obj, int argc, char** argv) {
 			free(obj->property);
 		obj->property = strdup(tmp.property);
 	}
+	else if (obj->property == NULL && MTRACKD_DEFAULT_PROP != NULL)
+		obj->property = strdup(MTRACKD_DEFAULT_PROP);
+
 	if (has_pid_file) {
 		if (obj->pid_file != NULL)
 			free(obj->pid_file);
 		obj->pid_file = strdup(tmp.pid_file);
 	}
+	else if (obj->pid_file == NULL && MTRACKD_DEFAULT_PID_FILE != NULL)
+		obj->pid_file = MTRACKD_DEFAULT_PID_FILE;
+
 	if (has_enable)
 		obj->enable = tmp.enable;
 	if (has_disable)
