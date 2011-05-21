@@ -44,8 +44,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_dispad_OBJECTS = config.$(OBJEXT) control.$(OBJEXT) \
-	dispad.$(OBJEXT) listen.$(OBJEXT)
+am_dispad_OBJECTS = conf.$(OBJEXT) control.$(OBJEXT) dispad.$(OBJEXT) \
+	listen.$(OBJEXT)
 dispad_OBJECTS = $(am_dispad_OBJECTS)
 dispad_DEPENDENCIES = $(LIBOBJS)
 DEFAULT_INCLUDES = -I.@am__isrc@
@@ -145,7 +145,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-dispad_SOURCES = config.c control.c dispad.c listen.c
+dispad_SOURCES = conf.c control.c dispad.c listen.c
 dispad_LDADD = $(LIBOBJS)
 INCLUDES = -I$(top_srcdir)/include/
 all: all-am
@@ -229,7 +229,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/config.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/conf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/control.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dispad.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/listen.Po@am__quote@

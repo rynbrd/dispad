@@ -45,6 +45,10 @@ typedef struct {
 Bool control_init(Control* obj, Display* display, char* property_name,
 		int enable_value, int disable_value);
 
+/* Find and load devices to control. Blocks until devices are found.
+ */
+void control_find_devices(Control* obj);
+
 /* Free a Control object.
  */
 void control_free(Control* obj);

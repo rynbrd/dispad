@@ -36,6 +36,32 @@ static void clear_bit(unsigned char *ptr, int bit)
     ptr[byte_num] &= ~(1 << bit_num);
 }
 
+static Bool listen_activity(Listen* obj) {
+	int i;
+	Bool res = False;
+	XQueryKeymap(obj->display, (char*)obj->current);
+
+	for (i = 0; i < MTRACKD_KEYMAP_SIZE; i++) {
+		if ((obj->current[i] & ~obj->previous[i]) & obj->mask[i]) {
+			res = True;
+			break;
+		}
+	}
+
+	if (!obj->modifiers) {
+		for (i = 0; i < MTRACKD_KEYMAP_SIZE; i++) {
+			if (obj->current[i] & ~obj->mask[i]) {
+				res = False;
+				break;
+			}
+		}
+	}
+
+	memcpy(obj->current, obj->previous,
+		sizeof(unsigned char)*MTRACKD_KEYMAP_SIZE);
+	return res;
+}
+
 Bool listen_init(Listen* obj, Display* display, Bool modifiers,
 		int idle_time, int poll_time) {
 	int i;
@@ -65,37 +91,12 @@ Bool listen_init(Listen* obj, Display* display, Bool modifiers,
 	XQueryKeymap(obj->display, (char*)obj->current);
 	memcpy(obj->current, obj->previous,
 		sizeof(unsigned char)*MTRACKD_KEYMAP_SIZE);
-}
-
-static Bool listen_activity(Listen* obj) {
-	int i;
-	Bool res = False;
-	XQueryKeymap(obj->display, (char*)obj->current);
-
-	for (i = 0; i < MTRACKD_KEYMAP_SIZE; i++) {
-		if ((obj->current[i] & ~obj->previous[i]) & obj->mask[i]) {
-			res = True;
-			break;
-		}
-	}
-
-	if (!obj->modifiers) {
-		for (i = 0; i < MTRACKD_KEYMAP_SIZE; i++) {
-			if (obj->current[i] & ~obj->mask[i]) {
-				res = False;
-				break;
-			}
-		}
-	}
-
-	memcpy(obj->current, obj->previous,
-		sizeof(unsigned char)*MTRACKD_KEYMAP_SIZE);
-	return res;
+	return True;
 }
 
 void listen_run(Listen* obj, Control* ctrl) {
 	double current_time, last_activity = 0;
-	for (;;) {
+	while(True) {
 		current_time = now();
 		if (listen_activity(obj))
 			last_activity = current_time;

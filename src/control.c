@@ -24,10 +24,34 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int control_find_devices(Control* obj) {
+#define CONTROL_FIND_SLEEP 2
+
+static Bool control_get_value(Control* obj, int device_index, unsigned char* value) {
+	Atom type;
+	int format;
+	unsigned long size, bytes;
+	unsigned char* data;
+
+	if (XGetDeviceProperty(obj->display, obj->devices[device_index], obj->property, 0, 1,
+			False, XA_INTEGER, &type, &format, &size, &bytes, &data) == Success &&
+			type != None) {
+		*value = data[0];
+		return True;
+	}
+	return False;
+}
+
+static void control_set_value(Control* obj, int device_index, unsigned char value) {
+	XChangeDeviceProperty(obj->display, obj->devices[device_index],
+		obj->property, XA_INTEGER, 8, PropModeReplace, &value, 1);
+}
+
+static int control_load_devices(Control* obj) {
+	int i;
 	int ndev = 0;
 	int nprops = 0;
 	int found = 0;
+	unsigned char value;
 	Atom touchpad_type = XInternAtom(obj->display, XI_TOUCHPAD, True);
 	Atom* properties = NULL;
 	XDevice* dev = NULL;
@@ -71,34 +95,28 @@ static int control_find_devices(Control* obj) {
 			break;
 	}
 
+	for (i = 0; i < obj->device_count; i++) {
+		if (control_get_value(obj, i, &value))
+			obj->start_values[i] = value;
+	}
+
 	XFreeDeviceList(info);
 	return obj->device_count;
 }
 
-static Bool control_get_value(Control* obj, int device_index, unsigned char* value) {
-	Atom type;
-	int format;
-	unsigned long size, bytes;
-	unsigned char* data;
-
-	if (XGetDeviceProperty(obj->display, obj->devices[device_index], obj->property, 0, 1,
-			False, XA_INTEGER, &type, &format, &size, &bytes, &data) == Success &&
-			type != None) {
-		*value = data[0];
-		return True;
+void control_find_devices(Control* obj) {
+	while(True) {
+		if (control_load_devices(obj)) {
+			DEBUG("found %d controllable devices\n", obj->device_count);
+			return;
+		}
+		DEBUG("no controllable devices found, sleeping for %d seconds\n", CONTROL_FIND_SLEEP);
+		sleep(CONTROL_FIND_SLEEP);
 	}
-	return False;
-}
-
-static void control_set_value(Control* obj, int device_index, unsigned char value) {
-	XChangeDeviceProperty(obj->display, obj->devices[device_index],
-		obj->property, XA_INTEGER, 8, PropModeReplace, &value, 1);
 }
 
 Bool control_init(Control* obj, Display* display, char* property_name,
 		int enable_value, int disable_value) {
-	int i;
-	unsigned char value;
 	obj->property_name = strdup(property_name);
 	obj->enable_value = enable_value;
 	obj->disable_value = disable_value;
@@ -110,19 +128,6 @@ Bool control_init(Control* obj, Display* display, char* property_name,
 		XCloseDisplay(obj->display);
 		return False;
 	}
-
-	if (!control_find_devices(obj)) {
-		ERROR("no devices found with property %s\n", obj->property_name);
-		XCloseDisplay(obj->display);
-		return False;
-	}
-
-	for (i = 0; i < obj->device_count; i++) {
-		if (control_get_value(obj, i, &value))
-			obj->start_values[i] = value;
-	}
-
-	DEBUG("found %d controllable devices\n", obj->device_count);
 
 	return True;
 }
@@ -149,7 +154,7 @@ void control_toggle(Control* obj, int enable) {
 			}
 		}
 		else
-			WARN("could not get current value of property %s\n", obj->property_name);
+			DEBUG("could not get current value of property %s\n", obj->property_name);
 	}
 }
 

@@ -22,12 +22,16 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
 #include <unistd.h>
 #include <X11/Xlib.h>
+#include <X11/extensions/XI.h>
 #include "common.h"
-#include "config.h"
+#include "conf.h"
 #include "control.h"
 #include "listen.h"
+
+#define X11_ERROR_BUFFER 256
 
 int log_level = LOG_INFO;
 Display* display = NULL;
@@ -47,6 +51,30 @@ static void cleanup() {
 	if (display != NULL) {
 		XCloseDisplay(display);
 		display = NULL;
+	}
+}
+
+int xlib_error_handler(Display* display, XErrorEvent* event) {
+	int xi_major, xi_event, xi_error;
+	char buffer[X11_ERROR_BUFFER];
+	strcpy(buffer, "");
+
+	if (!XQueryExtension(event->display, INAME, &xi_major, &xi_event, &xi_error)) {
+		ERROR("failed to query xinput extension\n");
+		cleanup();
+		exit(2);
+	}
+
+	XGetErrorText(event->display, event->error_code, buffer, X11_ERROR_BUFFER);
+
+	if (event->request_code == xi_major && event->error_code == xi_error + XI_BadDevice) {
+		WARN("%s\n", buffer);
+		control_find_devices(control);
+	}
+	else {
+		ERROR("%s\n", buffer);
+		cleanup();
+		exit(2);
 	}
 }
 
@@ -142,8 +170,13 @@ int main(int argc, char** argv) {
 	signal_installer();
 	DEBUG("signal handling enabled\n");
 
+	XSetErrorHandler(xlib_error_handler);
+
 	if (!config.foreground)
 		background();
+
+	DEBUG("finding trackpad devices\n");
+	control_find_devices(control);
 
 	INFO("listener running\n");
 	listen_run(listen, control);
