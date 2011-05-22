@@ -31,31 +31,31 @@ commandline option to see all of the available commandline options.
 The config file uses key = value pairs as its syntax. Strings must be double
 quotes. The following config file options are accepted.
 
-**property**
+**property** -
 The name of the XInput property which is used to disable/enable the
 trackpad(s). dispad will modify this property on all trackpad devices which
 contain it. String value. Defaults to "Trackpad Disable Input".
 
-**enable**
+**enable** -
 The specified XInput property is set to this value when enabling trackpad
 input. Unsigned 8-bit integer value. Defaults to 0.
 
-**disable**
+**disable** -
 The specified XInput property is set to this value when disabling trackpad
 input.  Unsigned 8-bit integer value. Defaults to 1.
 
-**modifiers**
+**modifiers** -
 Whether or not modifier keys (alt, ctrl, etc) should effect the trackpad state.
 Boolean value. Defaults to false.
 
-**poll**
+**poll** -
 How long (in milliseconds) that dispad will wait after polling the keyboard
 before polling again. Integer value. Default to 100.
 
-**delay**
+**delay** -
 How long after the trackpad(s) should be disabled after a keystroke.
 
-**pidfile**
+**pidfile** -
 The location of the PID file dispad will create when running. If this option is
 commented or not present then a PID file will not be created. dispad will
 remove this file if it shuts down cleanly. If dispad is configured to create a
