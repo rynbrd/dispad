@@ -53,7 +53,8 @@ How long (in milliseconds) that dispad will wait after polling the keyboard
 before polling again. Integer value. Default to 100.
 
 **delay** -
-How long after the trackpad(s) should be disabled after a keystroke.
+How long after the trackpad(s) should be disabled after a keystroke. Integer.
+Defaults to 1000.
 
 **pidfile** -
 The location of the PID file dispad will create when running. If this option is
