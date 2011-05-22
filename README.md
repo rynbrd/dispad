@@ -1,5 +1,5 @@
-dispad readme
-=============
+dispad
+======
 
 A small daemon for temporarily disabling trackpads on keyboard events. By
 default dispad is configured to work with the xf86-input-mtrack multitouch
