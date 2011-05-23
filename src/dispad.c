@@ -139,8 +139,10 @@ int main(int argc, char** argv) {
 
 	if (config->foreground)
 		log_level = config->debug ? LOG_DEBUG : LOG_INFO;
-	else
+	else {
 		log_level = LOG_NONE;
+		background();
+	}
 
 	INFO("configured with:\n");
 	INFO("  property = %s\n", config->property);
@@ -177,9 +179,6 @@ int main(int argc, char** argv) {
 	DEBUG("signal handling enabled\n");
 
 	XSetErrorHandler(xlib_error_handler);
-
-	if (!config->foreground)
-		background();
 
 	if (!config_create_pid_file(config)) {
 		cleanup();
