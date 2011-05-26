@@ -108,6 +108,7 @@ void control_find_devices(Control* obj) {
 	while(True) {
 		if (control_load_devices(obj)) {
 			DEBUG("found %d controllable devices\n", obj->device_count);
+			control_toggle(obj, True);
 			return;
 		}
 		DEBUG("no controllable devices found, sleeping for %d seconds\n", CONTROL_FIND_SLEEP);
