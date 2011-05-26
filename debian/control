@@ -1,0 +1,13 @@
+Source: dispad
+Section: misc
+Priority: extra
+Maintainer: Ryan Bourgeois <sadpengu@unknown>
+Build-Depends: debhelper (>= 7.0.50~), autotools-dev, libconfuse-dev (>= 2.6-2)
+Standards-Version: 3.9.1
+Homepage: https://github.com/BlueDragonX/dispad
+Vcs-Git: git://github.com/BlueDragonX/dispad.git
+
+Package: dispad
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libconfuse0 (>= 2.6-2)
+Description: A small daemon for disabling trackpads on keyboard input.
