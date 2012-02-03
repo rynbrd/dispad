@@ -36,6 +36,7 @@ static Bool control_get_value(Control* obj, int device_index, unsigned char* val
 			False, XA_INTEGER, &type, &format, &size, &bytes, &data) == Success &&
 			type != None) {
 		*value = data[0];
+		free(data);
 		return True;
 	}
 	return False;
