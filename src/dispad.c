@@ -128,7 +128,7 @@ void background() {
 		exit(0);
 	}
 	else if (pid == -1) {
-		ERROR("failed to fork process, exitting\n");
+		ERROR("failed to fork process, exiting\n");
 		cleanup();
 		exit(2);
 	}
