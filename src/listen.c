@@ -22,6 +22,7 @@
 #include "listen.h"
 #include <string.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 static double now() {
 	struct timeval tv;
