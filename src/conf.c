@@ -36,7 +36,7 @@ static void usage() {
 static void help() {
 	usage();
 	fprintf(stderr, "\nDaemon for disabling trackpad input while typing. Options given at the\n");
-	fprintf(stderr, "commandline override those in the config file.\n\n");
+	fprintf(stderr, "command-line override those in the config file.\n\n");
 	fprintf(stderr, "Options:\n");
 	fprintf(stderr, "  -c, --config=FILE         Load the specified config file. Will load\n");
 	fprintf(stderr, "                            ~/.dispad by default.\n");
@@ -90,7 +90,7 @@ static Bool config_file_create(char* file) {
 	fprintf(fd, "disable = %d\n\n", MTRACKD_DEFAULT_DISABLE);
 	fprintf(fd, "# whether or not modifier keys disable the trackpad\n");
 	fprintf(fd, "modifiers = %s\n\n", MTRACKD_DEFAULT_MODIFIERS ? "true" : "false");
-	fprintf(fd, "# how long (in ms) to sleep betweek keyboard polls\n");
+	fprintf(fd, "# how long (in ms) to sleep between keyboard polls\n");
 	fprintf(fd, "poll = %d\n\n", MTRACKD_DEFAULT_POLL);
 	fprintf(fd, "# how long (in ms) to disable the trackpad after a keystroke\n");
 	fprintf(fd, "delay = %d\n\n", MTRACKD_DEFAULT_DELAY);
