@@ -13,7 +13,7 @@ License
 This software is licensed under the [GPLv2][2] and is copyright (C) 2011 Ryan
 Bourgeois <bluedragonx@gmail.com>.
 
-Additional bugfixes and work done by Andrew Gaul <[https://github.com/andrewgaul]>.
+Additional bugfixes and work done by Andrew Gaul [https://github.com/andrewgaul].
 
 Binaries
 --------
