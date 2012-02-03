@@ -90,7 +90,7 @@ Bool listen_init(Listen* obj, Display* display, Bool modifiers,
 	}
 
 	XQueryKeymap(obj->display, (char*)obj->current);
-	memcpy(obj->current, obj->previous,
+	memcpy(obj->previous, obj->current,
 		sizeof(unsigned char)*MTRACKD_KEYMAP_SIZE);
 	return True;
 }
