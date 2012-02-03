@@ -30,8 +30,8 @@
 #include <confuse.h>
 
 static void usage() {
-	fprintf(stderr, "Usage: dispad [-hFD] [-c file] [-p name] [-e value] [-d value]\n");
-	fprintf(stderr, "            [-s time] [-i time]\n");
+	fprintf(stderr, "Usage: dispad [-hmFD] [-c file] [-p name] [-e value] [-d value]\n");
+	fprintf(stderr, "            [-s time] [-i time] [-P file]\n");
 }
 
 static void help() {
@@ -56,7 +56,7 @@ static void help() {
 	fprintf(stderr, "                            useful when daemonizing.\n");
 	fprintf(stderr, "  -F, --foreground          Start in the foreground. We daemonize by default.\n");
 	fprintf(stderr, "  -D, --debug               Enable debug output. Only useful when combined with\n");
-	fprintf(stderr, "                            -f.\n");
+	fprintf(stderr, "                            -F.\n");
 	fprintf(stderr, "  -h, --help                Display this help.\n");
 }
 
