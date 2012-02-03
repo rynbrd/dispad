@@ -23,6 +23,7 @@
 #include "common.h"
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #define CONTROL_FIND_SLEEP 2
 

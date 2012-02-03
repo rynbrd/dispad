@@ -83,6 +83,8 @@ int xlib_error_handler(Display* display, XErrorEvent* event) {
 		cleanup();
 		exit(2);
 	}
+
+	return 0;
 }
 
 static void signal_handler(int signum) {
@@ -98,7 +100,7 @@ static void signal_installer() {
 #endif
     };
 
-	int i;
+	size_t i;
 	struct sigaction action;
 	sigset_t set;
 

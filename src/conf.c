@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include <getopt.h>
 #include <confuse.h>
 
@@ -130,7 +131,6 @@ static Bool config_file_parse(Config* obj, char* file) {
 Bool config_init(Config* obj, int argc, char** argv) {
 	int c;
 	Bool res = True;
-	char* value;
 	char* file = NULL;
 	char* opts = "c:p:e:d:ms:i:P:FDh";
 	struct option lopts[] = {
