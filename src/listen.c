@@ -97,7 +97,7 @@ Bool listen_init(Listen* obj, Display* display, Bool modifiers,
 
 void listen_run(Listen* obj, Control* ctrl) {
 	double current_time, last_activity = 0;
-	while(True) {
+	while (True) {
 		current_time = now();
 		if (listen_activity(obj))
 			last_activity = current_time;

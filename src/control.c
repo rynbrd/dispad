@@ -73,7 +73,7 @@ static int control_load_devices(Control* obj) {
 
 			properties = XListDeviceProperties(obj->display, dev, &nprops);
 			if (properties) {
-				while(nprops--) {
+				while (nprops--) {
 					if (properties[nprops] == obj->property) {
 						DEBUG("found property on device %s\n", info[ndev].name);
 						obj->devices[obj->device_count++] = dev;
@@ -107,7 +107,7 @@ static int control_load_devices(Control* obj) {
 }
 
 void control_find_devices(Control* obj) {
-	while(True) {
+	while (True) {
 		if (control_load_devices(obj)) {
 			DEBUG("found %d controllable devices\n", obj->device_count);
 			control_toggle(obj, True);
