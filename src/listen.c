@@ -58,7 +58,7 @@ static Bool listen_activity(Listen* obj) {
 		}
 	}
 
-	memcpy(obj->current, obj->previous,
+	memcpy(obj->previous, obj->current,
 		sizeof(unsigned char)*MTRACKD_KEYMAP_SIZE);
 	return res;
 }
