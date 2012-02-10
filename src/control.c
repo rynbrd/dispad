@@ -52,7 +52,6 @@ static int control_load_devices(Control* obj) {
 	int i;
 	int ndev = 0;
 	int nprops = 0;
-	int found = 0;
 	unsigned char value;
 	Atom touchpad_type = XInternAtom(obj->display, XI_TOUCHPAD, True);
 	Atom* properties = NULL;
@@ -93,7 +92,7 @@ static int control_load_devices(Control* obj) {
 			DEBUG("not a trackpad: %s\n", info[ndev].name);
 		}
 
-		if (found == MTRACKD_MAX_DEVICES)
+		if (obj->device_count == MTRACKD_MAX_DEVICES)
 			break;
 	}
 
