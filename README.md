@@ -18,7 +18,20 @@ Additional bugfixes and work done by Andrew Gaul [https://github.com/andrewgaul]
 Binaries
 --------
 
-Binary packages will be made available at the first official release.
+Binary packages are available here: [http://www.dev.fatedmariner.org/packages/dispad/]
+
+Building
+--------
+To build and install dispad from source, you'll need to run the following:
+
+	git clone git@github.com:BlueDragonX/dispad.git
+	cd dispad
+	autoreconf -i
+	./configure
+	make && make install
+
+This will build the stable branch. If you wish to build the dev branch you may
+append '-b dev' to the git command.
 
 Configuration
 -------------
