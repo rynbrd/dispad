@@ -49,7 +49,7 @@ static Bool listen_activity(Listen* obj) {
 		}
 	}
 
-	if (!obj->modifiers) {
+	if (res && !obj->modifiers) {
 		for (i = 0; i < MTRACKD_KEYMAP_SIZE; i++) {
 			if (obj->current[i] & ~obj->mask[i]) {
 				res = False;
