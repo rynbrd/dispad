@@ -58,7 +58,7 @@ static Bool listen_activity(Listen* obj) {
 		}
 	}
 
-	memcpy(obj->current, obj->previous,
+	memcpy(obj->previous, obj->current,
 		sizeof(unsigned char)*MTRACKD_KEYMAP_SIZE);
 	return res;
 }
@@ -73,9 +73,7 @@ Bool listen_init(Listen* obj, Display* display, Bool modifiers,
 	obj->idle_time = ((double)idle_time)/1000.0;
 	obj->poll_time = poll_time*1000;
 	obj->display = display;
-
-	for (i = 0; i < MTRACKD_KEYMAP_SIZE; i++)
-		obj->mask[i] = 0xff;
+	memset(obj->mask, 0xff, MTRACKD_KEYMAP_SIZE);
 
 	if (!modifiers) {
 		modmap = XGetModifierMapping(obj->display);
@@ -97,7 +95,7 @@ Bool listen_init(Listen* obj, Display* display, Bool modifiers,
 
 void listen_run(Listen* obj, Control* ctrl) {
 	double current_time, last_activity = 0;
-	while(True) {
+	while (True) {
 		current_time = now();
 		if (listen_activity(obj))
 			last_activity = current_time;

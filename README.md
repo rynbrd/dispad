@@ -18,14 +18,27 @@ Additional bugfixes and work done by Andrew Gaul [https://github.com/andrewgaul]
 Binaries
 --------
 
-Binary packages will be made available at the first official release.
+Binary packages are available here: [http://www.dev.fatedmariner.org/packages/dispad/]
+
+Building
+--------
+To build and install dispad from source, you'll need to run the following:
+
+	git clone git@github.com:BlueDragonX/dispad.git
+	cd dispad
+	autoreconf -i
+	./configure
+	make && make install
+
+This will build the stable branch. If you wish to build the dev branch you may
+append '-b dev' to the git command.
 
 Configuration
 -------------
 
 dispad can be configured either at the command line or using a config file.
 When started for the first time dispad will create a config file at ~/.dispad
-containining the default configuration. The location of this config file can
+containing the default configuration. The location of this config file can
 changed with the --config commandline option. Configuration options given at
 the commandline will override those in the config file. use the --help
 commandline option to see all of the available commandline options.
@@ -47,16 +60,16 @@ The specified XInput property is set to this value when disabling trackpad
 input.  Unsigned 8-bit integer value. Defaults to 1.
 
 **modifiers** -
-Whether or not modifier keys (alt, ctrl, etc) should effect the trackpad state.
+Whether or not modifier keys (alt, ctrl, etc) should affect the trackpad state.
 Boolean value. Defaults to false.
 
 **poll** -
 How long (in milliseconds) that dispad will wait after polling the keyboard
-before polling again. Integer value. Default to 100.
+before polling again. Integer value. Defaults to 100.
 
 **delay** -
-How long after the trackpad(s) should be disabled after a keystroke. Integer.
-Defaults to 1000.
+How long after the trackpad(s) should be disabled after a keystroke. Integer
+value. Defaults to 1000.
 
 **pidfile** -
 The location of the PID file dispad will create when running. If this option is
