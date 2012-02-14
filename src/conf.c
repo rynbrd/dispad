@@ -144,7 +144,8 @@ Bool config_init(Config* obj, int argc, char** argv) {
 		{"pidfile", 1, 0, 'P'},
 		{"foreground", 1, 0, 'F'},
 		{"debug", 1, 0, 'D'},
-		{0, 0, 0, 0,}
+		{"help", 0, 0, 'h'},
+		{NULL, 0, 0, 0}
 	};
 
 	Config tmp;
