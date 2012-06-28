@@ -46,19 +46,13 @@ static Bool listen_activity(Listen* obj) {
 		if ((obj->current[i] & ~obj->previous[i]) & obj->mask[i]) {
 			res = True;
 			break;
+		} else if (obj->modifiers && (obj->current[i] & ~obj->mask[i])) {
+			res = True;
+			break;
 		}
 	}
 
-	if (!obj->modifiers) {
-		for (i = 0; i < MTRACKD_KEYMAP_SIZE; i++) {
-			if (obj->current[i] & ~obj->mask[i]) {
-				res = False;
-				break;
-			}
-		}
-	}
-
-	memcpy(obj->current, obj->previous,
+	memcpy(obj->previous, obj->current,
 		sizeof(unsigned char)*MTRACKD_KEYMAP_SIZE);
 	return res;
 }
@@ -73,21 +67,17 @@ Bool listen_init(Listen* obj, Display* display, Bool modifiers,
 	obj->idle_time = ((double)idle_time)/1000.0;
 	obj->poll_time = poll_time*1000;
 	obj->display = display;
+	memset(obj->mask, 0xff, MTRACKD_KEYMAP_SIZE);
 
-	for (i = 0; i < MTRACKD_KEYMAP_SIZE; i++)
-		obj->mask[i] = 0xff;
+	modmap = XGetModifierMapping(obj->display);
 
-	if (!modifiers) {
-		modmap = XGetModifierMapping(obj->display);
-
-		for (i = 0; i < 8 * modmap->max_keypermod; i++) {
-			kc = modmap->modifiermap[i];
-			if (kc != 0)
-				clear_bit(obj->mask, kc);
-		}
-
-		XFreeModifiermap(modmap);
+	for (i = 0; i < 8 * modmap->max_keypermod; i++) {
+		kc = modmap->modifiermap[i];
+		if (kc != 0)
+			clear_bit(obj->mask, kc);
 	}
+
+	XFreeModifiermap(modmap);
 
 	XQueryKeymap(obj->display, (char*)obj->current);
 	memcpy(obj->previous, obj->current,
@@ -97,7 +87,7 @@ Bool listen_init(Listen* obj, Display* display, Bool modifiers,
 
 void listen_run(Listen* obj, Control* ctrl) {
 	double current_time, last_activity = 0;
-	while(True) {
+	while (True) {
 		current_time = now();
 		if (listen_activity(obj))
 			last_activity = current_time;

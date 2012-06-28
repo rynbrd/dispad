@@ -142,9 +142,10 @@ Bool config_init(Config* obj, int argc, char** argv) {
 		{"poll", 1, 0, 's'},
 		{"delay", 1, 0, 'i'},
 		{"pidfile", 1, 0, 'P'},
-		{"foreground", 1, 0, 'F'},
-		{"debug", 1, 0, 'D'},
-		{0, 0, 0, 0,}
+		{"foreground", 0, 0, 'F'},
+		{"debug", 0, 0, 'D'},
+		{"help", 0, 0, 'h'},
+		{NULL, 0, 0, 0}
 	};
 
 	Config tmp;
