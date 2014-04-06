@@ -7,6 +7,7 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_CHECK_LIB([Xi], [XOpenDevice])
 AC_CHECK_LIB([X11], [XOpenDisplay])
-AC_CHECK_LIB([confuse], [cfg_init])
+AC_CHECK_LIB([confuse], [cfg_init], [], [AC_MSG_ERROR([could not find libconfuse])])
+AC_CHECK_HEADER([confuse.h], [], [AC_MSG_ERROR([could not find or include confuse.h])])
 AC_CONFIG_FILES([Makefile src/Makefile])
 AC_OUTPUT
