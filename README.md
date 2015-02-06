@@ -15,23 +15,13 @@ Bourgeois <bluedragonx@gmail.com>.
 
 Additional bugfixes and work done by Andrew Gaul [https://github.com/andrewgaul].
 
-Binaries
---------
+Building and Installing
+-----------------------
+This is a standard autoconf package. To build and install from source run the
+following:
 
-Binary packages are available here: [http://www.dev.fatedmariner.org/packages/dispad/]
-
-Building
---------
-To build and install dispad from source, you'll need to run the following:
-
-	git clone git@github.com:BlueDragonX/dispad.git
-	cd dispad
-	autoreconf -i
 	./configure
 	make && make install
-
-This will build the stable branch. If you wish to build the dev branch you may
-append '-b dev' to the git command.
 
 Configuration
 -------------
@@ -80,4 +70,3 @@ this option is set to ~/.dispad.pid but is commented out.
 
 [1]: https://github.com/BlueDragonX/dispad
 [2]: http://www.gnu.org/licenses/gpl-2.0.html	"GNU General Public License, version 2"
-

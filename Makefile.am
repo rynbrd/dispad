@@ -1,2 +1,2 @@
 SUBDIRS = src
-INCLUDES = $(top_srcdir)/include/
+AM_CPPFLAGS = $(top_srcdir)/include/
